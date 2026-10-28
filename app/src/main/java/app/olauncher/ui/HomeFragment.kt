@@ -390,9 +390,9 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             // instead, split from the day/month so the clock column has the same line count
             // as the weather block.
             binding.date.text = SimpleDateFormat("EEEE", Locale.getDefault()).format(Date())
-            binding.dateLine2.text = SimpleDateFormat("d MMM", Locale.getDefault()).format(Date())
+            binding.dateLine2.text = SimpleDateFormat("MMMM d", Locale.getDefault()).format(Date())
         } else {
-            binding.date.text = SimpleDateFormat("EEE, d MMM", Locale.getDefault()).format(Date()).replace(".,", ",")
+            binding.date.text = SimpleDateFormat("EEE, MMMM d", Locale.getDefault()).format(Date()).replace(".,", ",")
             val battery = (requireContext().getSystemService(Context.BATTERY_SERVICE) as BatteryManager)
                 .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
             binding.dateLine2.isVisible = dateVisible && battery > 0
