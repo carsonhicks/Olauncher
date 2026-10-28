@@ -23,38 +23,104 @@
         android:layout_height="1dp"
         android:contentDescription="@string/recents_layout_description" /> -->
 
-    <!-- Clock and calendar-->
+    <!-- Clock, calendar and weather-->
     <LinearLayout
         android:id="@+id/dateTimeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="48dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
+        android:gravity="top|center_horizontal"
+        android:orientation="horizontal"
         android:visibility="gone"
         tools:visibility="visible">
 
-        <TextClock
-            android:id="@+id/clock"
-            style="@style/TextDefault"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
-            android:format12Hour="h:mm"
-            android:textSize="@dimen/time_size"
-            tools:text="02:34" />
+            android:layout_gravity="bottom"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/date"
-            style="@style/TextDefault"
+            <TextClock
+                android:id="@+id/clock"
+                style="@style/TextDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:format12Hour="h:mm"
+                android:textSize="@dimen/time_size"
+                tools:text="02:34" />
+
+            <TextView
+                android:id="@+id/date"
+                style="@style/TextDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:format12Hour="EEE, dd MMM"
+                android:format24Hour="EEE, dd MMM"
+                android:paddingHorizontal="3dp"
+                android:textSize="@dimen/date_size"
+                tools:text="Thu, 30 Dec" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/weatherLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:format12Hour="EEE, dd MMM"
-            android:format24Hour="EEE, dd MMM"
-            android:paddingHorizontal="3dp"
-            android:textSize="@dimen/date_size"
-            tools:text="Thu, 30 Dec" />
+            android:layout_gravity="bottom"
+            android:layout_marginStart="24dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/weatherEmoji"
+                    style="@style/TextDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/time_size"
+                    tools:text="☀" />
+
+                <TextView
+                    android:id="@+id/weatherTemp"
+                    style="@style/TextDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="6dp"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="3dp"
+                    android:textSize="38sp"
+                    tools:text="72°" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/weatherCity"
+                style="@style/TextDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:textSize="12sp"
+                tools:text="San Francisco" />
+
+            <TextView
+                android:id="@+id/weatherHighLow"
+                style="@style/TextDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:textSize="@dimen/date_size"
+                tools:text="H:70° L:52°" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Screen time-->
@@ -176,6 +242,30 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_8"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/homeApp9"
+            style="@style/TextLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:hint="@string/app"
+            android:paddingVertical="@dimen/home_app_padding_vertical"
+            android:tag="@string/tag_9"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/homeApp10"
+            style="@style/TextLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:hint="@string/app"
+            android:paddingVertical="@dimen/home_app_padding_vertical"
+            android:tag="@string/tag_10"
             android:visibility="gone"
             tools:visibility="visible" />
 

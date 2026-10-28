@@ -22,16 +22,23 @@ import app.olauncher.data.Constants
 import app.olauncher.data.Prefs
 import app.olauncher.helper.SingleLiveEvent
 import app.olauncher.helper.WallpaperWorker
+import app.olauncher.helper.WeatherDisplay
+import app.olauncher.helper.WeatherWorker
+import app.olauncher.helper.fetchWeather
 import app.olauncher.helper.formattedTimeSpent
 import app.olauncher.helper.getAppsList
+import app.olauncher.helper.getCityName
+import app.olauncher.helper.getDeviceLocation
 import app.olauncher.helper.getPrivateSpaceApps
 import app.olauncher.helper.getPrivateSpaceUserHandle
 import app.olauncher.helper.hasBeenMinutes
+import app.olauncher.helper.hasLocationPermission
 import app.olauncher.helper.isOlauncherDefault
 import app.olauncher.helper.isPackageInstalled
 import app.olauncher.helper.isPrivateSpaceLocked
 import app.olauncher.helper.showToast
 import app.olauncher.helper.usageStats.EventLogWrapper
+import app.olauncher.helper.weatherEmoji
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -55,6 +62,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val homeAppAlignment = MutableLiveData<Int>()
     val screenTimeValue = MutableLiveData<String>()
     private var screenTimeJob: Job? = null
+
+    val weatherInfo = MutableLiveData<WeatherDisplay?>()
+    private var weatherJob: Job? = null
 
     val privateSpaceApps = MutableLiveData<List<AppModel>?>()
     val privateSpaceLocked = MutableLiveData<Boolean>()
@@ -96,12 +106,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Constants.FLAG_SET_HOME_APP_6 -> saveHomeApp(appModel, 6)
             Constants.FLAG_SET_HOME_APP_7 -> saveHomeApp(appModel, 7)
             Constants.FLAG_SET_HOME_APP_8 -> saveHomeApp(appModel, 8)
+            Constants.FLAG_SET_HOME_APP_9 -> saveHomeApp(appModel, 9)
+            Constants.FLAG_SET_HOME_APP_10 -> saveHomeApp(appModel, 10)
 
             Constants.FLAG_SET_SWIPE_LEFT_APP -> saveSwipeApp(appModel, isLeft = true)
             Constants.FLAG_SET_SWIPE_RIGHT_APP -> saveSwipeApp(appModel, isLeft = false)
             Constants.FLAG_SET_CLOCK_APP -> saveClockApp(appModel)
             Constants.FLAG_SET_CALENDAR_APP -> saveCalendarApp(appModel)
             Constants.FLAG_SET_SCREEN_TIME_APP -> saveScreenTimeApp(appModel)
+            Constants.FLAG_SET_WEATHER_APP -> saveWeatherApp(appModel)
         }
     }
 
@@ -200,6 +213,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         prefs.isShortcut8 = false
                         prefs.shortcutId8 = ""
                     }
+
+                    9 -> {
+                        prefs.appName9 = appModel.appLabel
+                        prefs.appPackage9 = appModel.appPackage
+                        prefs.appUser9 = appModel.user.toString()
+                        prefs.appActivityClassName9 = appModel.activityClassName
+                        prefs.isShortcut9 = false
+                        prefs.shortcutId9 = ""
+                    }
+
+                    10 -> {
+                        prefs.appName10 = appModel.appLabel
+                        prefs.appPackage10 = appModel.appPackage
+                        prefs.appUser10 = appModel.user.toString()
+                        prefs.appActivityClassName10 = appModel.activityClassName
+                        prefs.isShortcut10 = false
+                        prefs.shortcutId10 = ""
+                    }
                 }
             }
 
@@ -276,6 +307,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         prefs.isShortcut8 = true
                         prefs.shortcutId8 = appModel.shortcutId
                     }
+
+                    9 -> {
+                        prefs.appName9 = appModel.appLabel
+                        prefs.appPackage9 = appModel.appPackage
+                        prefs.appUser9 = appModel.user.toString()
+                        prefs.appActivityClassName9 = null
+                        prefs.isShortcut9 = true
+                        prefs.shortcutId9 = appModel.shortcutId
+                    }
+
+                    10 -> {
+                        prefs.appName10 = appModel.appLabel
+                        prefs.appPackage10 = appModel.appPackage
+                        prefs.appUser10 = appModel.user.toString()
+                        prefs.appActivityClassName10 = null
+                        prefs.isShortcut10 = true
+                        prefs.shortcutId10 = appModel.shortcutId
+                    }
                 }
             }
         }
@@ -337,6 +386,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             prefs.calendarAppPackage = appModel.appPackage
             prefs.calendarAppUser = appModel.user.toString()
             prefs.calendarAppClassName = appModel.activityClassName
+        }
+    }
+
+    private fun saveWeatherApp(appModel: AppModel) {
+        if (appModel is AppModel.App) {
+            prefs.weatherAppPackage = appModel.appPackage
+            prefs.weatherAppUser = appModel.user.toString()
+            prefs.weatherAppClassName = appModel.activityClassName ?: ""
         }
     }
 
@@ -438,6 +495,68 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         WorkManager.getInstance(appContext).cancelUniqueWork(Constants.WALLPAPER_WORKER_NAME)
         prefs.dailyWallpaperUrl = ""
         prefs.dailyWallpaper = false
+    }
+
+    fun setWeatherWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val weatherWorkRequest = PeriodicWorkRequestBuilder<WeatherWorker>(15, TimeUnit.MINUTES)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, 15, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
+        WorkManager
+            .getInstance(appContext)
+            .enqueueUniquePeriodicWork(
+                Constants.WEATHER_WORKER_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                weatherWorkRequest
+            )
+    }
+
+    fun cancelWeatherWorker() {
+        WorkManager.getInstance(appContext).cancelUniqueWork(Constants.WEATHER_WORKER_NAME)
+        weatherInfo.value = null
+    }
+
+    fun getWeather() {
+        if (prefs.weatherEnabled.not()) return
+        if (appContext.hasLocationPermission().not()) return
+
+        // Show whatever we already have (even if stale) while a refresh is in flight
+        if (prefs.weatherTempF != Int.MIN_VALUE)
+            weatherInfo.value = WeatherDisplay(
+                weatherEmoji(prefs.weatherCode, prefs.weatherIsDay),
+                prefs.weatherTempF,
+                prefs.weatherHighF,
+                prefs.weatherLowF,
+                prefs.weatherCity.ifBlank { null }
+            )
+
+        if (prefs.weatherUpdatedAt != 0L && prefs.weatherUpdatedAt.hasBeenMinutes(15).not()) return
+        if (weatherJob?.isActive == true) return
+
+        weatherJob = viewModelScope.launch {
+            val location = getDeviceLocation(appContext) ?: return@launch
+            val weather = fetchWeather(location.latitude, location.longitude) ?: return@launch
+            val city = getCityName(appContext, location.latitude, location.longitude)
+
+            prefs.weatherTempF = weather.tempF
+            prefs.weatherCode = weather.code
+            prefs.weatherIsDay = weather.isDay
+            prefs.weatherHighF = weather.highF
+            prefs.weatherLowF = weather.lowF
+            if (city != null) prefs.weatherCity = city
+            prefs.weatherUpdatedAt = System.currentTimeMillis()
+
+            weatherInfo.value = WeatherDisplay(
+                weatherEmoji(weather.code, weather.isDay),
+                weather.tempF,
+                weather.highF,
+                weather.lowF,
+                city ?: prefs.weatherCity.ifBlank { null }
+            )
+        }
     }
 
     fun updateHomeAlignment(gravity: Int) {

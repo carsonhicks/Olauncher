@@ -1,5 +1,6 @@
 package app.olauncher.ui
 
+import android.Manifest
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
@@ -12,10 +13,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
@@ -33,8 +36,11 @@ import app.olauncher.databinding.FragmentHomeBinding
 import app.olauncher.helper.appUsagePermissionGranted
 import app.olauncher.helper.dpToPx
 import app.olauncher.helper.expandNotificationDrawer
+import app.olauncher.helper.WeatherAppInfo
 import app.olauncher.helper.getChangedAppTheme
 import app.olauncher.helper.getUserHandleFromString
+import app.olauncher.helper.getWeatherApps
+import app.olauncher.helper.hasLocationPermission
 import app.olauncher.helper.isPackageInstalled
 import app.olauncher.helper.openAlarmApp
 import app.olauncher.helper.openCalendar
@@ -57,6 +63,14 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private var homeAppsLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+
+    private val requestLocationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) populateWeather()
+            else binding.weatherLayout.visibility = View.GONE
+        }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -75,14 +89,57 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         setHomeAlignment(prefs.homeAlignment)
         initSwipeTouchListener()
         initClickListeners()
+
+        homeAppsLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { syncHomeAppsTopPadding() }
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(homeAppsLayoutListener)
+    }
+
+    // Keeps the gap above the first home app equal to the gap below the last one, measured from
+    // the bottom of the date/time block (whose height varies with weather visibility and text size).
+    private fun syncHomeAppsTopPadding() {
+        if (_binding == null || prefs.homeBottomAlignment) return
+
+        val dateTimeBottom = if (binding.dateTimeLayout.isVisible) binding.dateTimeLayout.bottom else 0
+        val desiredPaddingTop = dateTimeBottom + binding.homeAppsLayout.paddingBottom
+        if (binding.homeAppsLayout.paddingTop == desiredPaddingTop) return
+
+        binding.homeAppsLayout.setPadding(
+            binding.homeAppsLayout.paddingLeft,
+            desiredPaddingTop,
+            binding.homeAppsLayout.paddingRight,
+            binding.homeAppsLayout.paddingBottom
+        )
     }
 
     override fun onResume() {
         super.onResume()
         populateHomeScreen(false)
         viewModel.isOlauncherDefault()
+        populateWeather()
         if (prefs.showStatusBar) showStatusBar()
         else hideStatusBar()
+    }
+
+    private fun populateWeather() {
+        if (prefs.weatherEnabled.not()) {
+            binding.weatherLayout.visibility = View.GONE
+            return
+        }
+
+        when {
+            requireContext().hasLocationPermission() -> {
+                binding.weatherLayout.visibility = View.VISIBLE
+                viewModel.setWeatherWorker()
+                viewModel.getWeather()
+            }
+
+            prefs.weatherPermissionRequested.not() -> {
+                prefs.weatherPermissionRequested = true
+                requestLocationPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+
+            else -> binding.weatherLayout.visibility = View.GONE
+        }
     }
 
     override fun onClick(view: View) {
@@ -92,6 +149,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             // R.id.recents -> {}
             R.id.clock -> openClockApp()
             R.id.date -> openCalendarApp()
+            R.id.weatherLayout -> openWeatherApp()
             R.id.setDefaultLauncher -> viewModel.resetLauncherLiveData.call()
             R.id.tvScreenTime -> openScreenTimeDigitalWellbeing()
 
@@ -130,6 +188,29 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             )
     }
 
+    private fun openWeatherApp() {
+        if (prefs.weatherAppPackage.isNotBlank()) {
+            launchApp("Weather", prefs.weatherAppPackage, prefs.weatherAppClassName, prefs.weatherAppUser)
+            return
+        }
+
+        // Nothing configured yet: if there's exactly one weather app installed, use it as a
+        // sensible default. Otherwise fall back to the same app picker long-press opens.
+        val weatherApps = requireContext().getWeatherApps()
+        when {
+            weatherApps.isEmpty() -> requireContext().showToast(R.string.no_weather_app_found)
+            weatherApps.size == 1 -> selectWeatherApp(weatherApps.first())
+            else -> showAppList(Constants.FLAG_SET_WEATHER_APP)
+        }
+    }
+
+    private fun selectWeatherApp(app: WeatherAppInfo) {
+        prefs.weatherAppPackage = app.packageName
+        prefs.weatherAppClassName = app.activityClassName
+        prefs.weatherAppUser = ""
+        launchApp("Weather", app.packageName, app.activityClassName, "")
+    }
+
     override fun onLongClick(view: View): Boolean {
         when (view.id) {
             R.id.homeApp1 -> showAppList(Constants.FLAG_SET_HOME_APP_1, prefs.appName1.isNotEmpty(), true)
@@ -140,11 +221,20 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             R.id.homeApp6 -> showAppList(Constants.FLAG_SET_HOME_APP_6, prefs.appName6.isNotEmpty(), true)
             R.id.homeApp7 -> showAppList(Constants.FLAG_SET_HOME_APP_7, prefs.appName7.isNotEmpty(), true)
             R.id.homeApp8 -> showAppList(Constants.FLAG_SET_HOME_APP_8, prefs.appName8.isNotEmpty(), true)
+            R.id.homeApp9 -> showAppList(Constants.FLAG_SET_HOME_APP_9, prefs.appName9.isNotEmpty(), true)
+            R.id.homeApp10 -> showAppList(Constants.FLAG_SET_HOME_APP_10, prefs.appName10.isNotEmpty(), true)
             R.id.clock -> {
                 showAppList(Constants.FLAG_SET_CLOCK_APP)
                 prefs.clockAppPackage = ""
                 prefs.clockAppClassName = ""
                 prefs.clockAppUser = ""
+            }
+
+            R.id.weatherLayout -> {
+                showAppList(Constants.FLAG_SET_WEATHER_APP)
+                prefs.weatherAppPackage = ""
+                prefs.weatherAppClassName = ""
+                prefs.weatherAppUser = ""
             }
 
             R.id.date -> {
@@ -203,6 +293,14 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         viewModel.screenTimeValue.observe(viewLifecycleOwner) {
             it?.let { binding.tvScreenTime.text = it }
         }
+        viewModel.weatherInfo.observe(viewLifecycleOwner) { weather ->
+            if (weather == null) return@observe
+            binding.weatherEmoji.text = weather.emoji
+            binding.weatherTemp.text = getString(R.string.weather_temperature_fahrenheit, weather.tempF)
+            binding.weatherHighLow.text = getString(R.string.weather_high_low, weather.highF, weather.lowF)
+            binding.weatherCity.text = weather.city.orEmpty()
+            binding.weatherCity.isVisible = weather.city.isNullOrBlank().not()
+        }
         // Home button for recents feature disabled
         // viewModel.showRecentApps.observe(viewLifecycleOwner) {
         //     binding.recents.performClick()
@@ -220,6 +318,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeApp6.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp6))
         binding.homeApp7.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp7))
         binding.homeApp8.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp8))
+        binding.homeApp9.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp9))
+        binding.homeApp10.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp10))
     }
 
     private fun initClickListeners() {
@@ -228,8 +328,10 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         // binding.recents.setOnClickListener(this)
         binding.clock.setOnClickListener(this)
         binding.date.setOnClickListener(this)
+        binding.weatherLayout.setOnClickListener(this)
         binding.clock.setOnLongClickListener(this)
         binding.date.setOnLongClickListener(this)
+        binding.weatherLayout.setOnLongClickListener(this)
         binding.setDefaultLauncher.setOnClickListener(this)
         binding.setDefaultLauncher.setOnLongClickListener(this)
         binding.tvScreenTime.setOnClickListener(this)
@@ -244,6 +346,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeApp6.setOnClickListener(this)
         binding.homeApp7.setOnClickListener(this)
         binding.homeApp8.setOnClickListener(this)
+        binding.homeApp9.setOnClickListener(this)
+        binding.homeApp10.setOnClickListener(this)
         binding.homeApp1.setOnLongClickListener(this)
         binding.homeApp2.setOnLongClickListener(this)
         binding.homeApp3.setOnLongClickListener(this)
@@ -252,6 +356,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeApp6.setOnLongClickListener(this)
         binding.homeApp7.setOnLongClickListener(this)
         binding.homeApp8.setOnLongClickListener(this)
+        binding.homeApp9.setOnLongClickListener(this)
+        binding.homeApp10.setOnLongClickListener(this)
     }
 
     private fun setHomeAlignment(horizontalGravity: Int = prefs.homeAlignment) {
@@ -266,6 +372,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeApp6.gravity = horizontalGravity
         binding.homeApp7.gravity = horizontalGravity
         binding.homeApp8.gravity = horizontalGravity
+        binding.homeApp9.gravity = horizontalGravity
+        binding.homeApp10.gravity = horizontalGravity
     }
 
     private fun populateDateTime() {
@@ -377,6 +485,20 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             prefs.appName8 = ""
             prefs.appPackage8 = ""
         }
+        if (homeAppsNum == 8) return
+
+        binding.homeApp9.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp9, prefs.appName9, prefs.appPackage9, prefs.appUser9, prefs.isShortcut9, prefs.shortcutId9)) {
+            prefs.appName9 = ""
+            prefs.appPackage9 = ""
+        }
+        if (homeAppsNum == 9) return
+
+        binding.homeApp10.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp10, prefs.appName10, prefs.appPackage10, prefs.appUser10, prefs.isShortcut10, prefs.shortcutId10)) {
+            prefs.appName10 = ""
+            prefs.appPackage10 = ""
+        }
     }
 
     private fun setHomeAppText(
@@ -434,6 +556,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeApp6.visibility = View.GONE
         binding.homeApp7.visibility = View.GONE
         binding.homeApp8.visibility = View.GONE
+        binding.homeApp9.visibility = View.GONE
+        binding.homeApp10.visibility = View.GONE
     }
 
     private fun launchAppOrShortcut(
@@ -721,6 +845,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     override fun onDestroyView() {
+        homeAppsLayoutListener?.let { binding.root.viewTreeObserver.removeOnGlobalLayoutListener(it) }
         super.onDestroyView()
         _binding = null
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -503,16 +504,17 @@ fun openAlarmApp(context: Context) {
 
 fun openCalendar(context: Context) {
     try {
-        val calendarUri = CalendarContract.CONTENT_URI
-            .buildUpon()
-            .appendPath("time")
-            .build()
-        context.startActivity(Intent(Intent.ACTION_VIEW, calendarUri))
+        // Some calendar apps (e.g. Proton Calendar) mishandle the CalendarContract "time" URI
+        // below, showing a spurious "Invalid link to the event" toast even though it still
+        // opens to today. The generic app-calendar launch avoids that and still lands on today.
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_APP_CALENDAR)
+        context.startActivity(intent)
     } catch (e: Exception) {
         try {
-            val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(Intent.CATEGORY_APP_CALENDAR)
-            context.startActivity(intent)
+            val builder = CalendarContract.CONTENT_URI.buildUpon().appendPath("time")
+            ContentUris.appendId(builder, System.currentTimeMillis())
+            context.startActivity(Intent(Intent.ACTION_VIEW, builder.build()))
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -599,29 +601,6 @@ fun Context.getColorFromAttr(
     return typedValue.data
 }
 
-fun Context.shareApp() {
-    val message = getString(R.string.are_you_using_your_phone_or_is_your_phone_using_you) +
-            "\n" + Constants.URL_OLAUNCHER_PLAY_STORE
-    val sendIntent: Intent = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, message)
-        type = "text/plain"
-    }
-
-    val shareIntent = Intent.createChooser(sendIntent, null)
-    startActivity(shareIntent)
-}
-
-fun Context.rateApp() {
-    val intent = Intent(
-        Intent.ACTION_VIEW,
-        Constants.URL_OLAUNCHER_PLAY_STORE.toUri()
-    )
-    var flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-    flags = flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-    intent.addFlags(flags)
-    startActivity(intent)
-}
 
 @RequiresApi(Build.VERSION_CODES.N_MR1)
 fun Context.deletePinnedShortcut(packageName: String, shortcutIdToDelete: String, user: UserHandle) {
