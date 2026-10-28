@@ -148,7 +148,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             // Home button for recents feature disabled
             // R.id.recents -> {}
             R.id.clock -> openClockApp()
-            R.id.date -> openCalendarApp()
+            R.id.date, R.id.dateLine2 -> openCalendarApp()
             R.id.weatherLayout -> openWeatherApp()
             R.id.setDefaultLauncher -> viewModel.resetLauncherLiveData.call()
             R.id.tvScreenTime -> openScreenTimeDigitalWellbeing()
@@ -237,7 +237,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
                 prefs.weatherAppUser = ""
             }
 
-            R.id.date -> {
+            R.id.date, R.id.dateLine2 -> {
                 showAppList(Constants.FLAG_SET_CALENDAR_APP)
                 prefs.calendarAppPackage = ""
                 prefs.calendarAppClassName = ""
@@ -328,9 +328,11 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         // binding.recents.setOnClickListener(this)
         binding.clock.setOnClickListener(this)
         binding.date.setOnClickListener(this)
+        binding.dateLine2.setOnClickListener(this)
         binding.weatherLayout.setOnClickListener(this)
         binding.clock.setOnLongClickListener(this)
         binding.date.setOnLongClickListener(this)
+        binding.dateLine2.setOnLongClickListener(this)
         binding.weatherLayout.setOnLongClickListener(this)
         binding.setDefaultLauncher.setOnClickListener(this)
         binding.setDefaultLauncher.setOnLongClickListener(this)
@@ -379,19 +381,23 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     private fun populateDateTime() {
         binding.dateTimeLayout.isVisible = prefs.dateTimeVisibility != Constants.DateTime.OFF
         binding.clock.isVisible = Constants.DateTime.isTimeVisible(prefs.dateTimeVisibility)
-        binding.date.isVisible = Constants.DateTime.isDateVisible(prefs.dateTimeVisibility)
+        val dateVisible = Constants.DateTime.isDateVisible(prefs.dateTimeVisibility)
+        binding.date.isVisible = dateVisible
+        binding.dateLine2.isVisible = dateVisible
 
-//        var dateText = SimpleDateFormat("EEE, d MMM", Locale.getDefault()).format(Date())
-        val dateFormat = SimpleDateFormat("EEE, d MMM", Locale.getDefault())
-        var dateText = dateFormat.format(Date())
-
-        if (!prefs.showStatusBar) {
+        if (prefs.showStatusBar) {
+            // Status bar is already showing battery, so use the second line for the weekday
+            // instead, split from the day/month so the clock column has the same line count
+            // as the weather block.
+            binding.date.text = SimpleDateFormat("EEEE", Locale.getDefault()).format(Date())
+            binding.dateLine2.text = SimpleDateFormat("d MMM", Locale.getDefault()).format(Date())
+        } else {
+            binding.date.text = SimpleDateFormat("EEE, d MMM", Locale.getDefault()).format(Date()).replace(".,", ",")
             val battery = (requireContext().getSystemService(Context.BATTERY_SERVICE) as BatteryManager)
                 .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-            if (battery > 0)
-                dateText = getString(R.string.day_battery, dateText, battery)
+            binding.dateLine2.isVisible = dateVisible && battery > 0
+            binding.dateLine2.text = getString(R.string.battery_percent, battery)
         }
-        binding.date.text = dateText.replace(".,", ",")
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

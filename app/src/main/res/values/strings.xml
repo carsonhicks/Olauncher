@@ -4,7 +4,7 @@
     <string name="lock_layout_description" translatable="false">lock layout description to be used a unique id to lock screen</string>
     <!-- Home button for recents feature disabled -->
     <!-- <string name="recents_layout_description" translatable="false">recents layout description to be used a unique id to show recent apps</string> -->
-    <string name="day_battery" formatted="false" translatable="false">%s, %d%%</string>
+    <string name="battery_percent" formatted="false" translatable="false">%d%%</string>
     <string name="tag_0" translatable="false">0</string>
     <string name="tag_1" translatable="false">1</string>
     <string name="tag_2" translatable="false">2</string>
