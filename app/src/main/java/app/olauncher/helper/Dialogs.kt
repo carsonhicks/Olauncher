@@ -68,6 +68,7 @@ class OlDialog(context: Context) : AlertDialog(context) {
  * Builds a dialog using the app's own layout: a title row with a close icon,
  * an optional [message] or custom [content], and a text [action] at the end.
  * [content] receives the container so the inflated view keeps its XML margins.
+ * When [validate] returns false the action is skipped and the dialog stays open.
  */
 fun Context.createDialog(
     @StringRes title: Int,
@@ -76,6 +77,7 @@ fun Context.createDialog(
     @StringRes neutral: Int = 0,
     onNeutral: () -> Unit = {},
     onAction: () -> Unit = {},
+    validate: () -> Boolean = { true },
     content: ((ViewGroup) -> View)? = null,
 ): OlDialog {
     val dialog = OlDialog(this)
@@ -101,6 +103,7 @@ fun Context.createDialog(
         dialog.dismiss()
     }
     binding.tvAction.setOnClickListener {
+        if (!validate()) return@setOnClickListener
         onAction()
         dialog.dismiss()
     }

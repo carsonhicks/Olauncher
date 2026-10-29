@@ -6,12 +6,16 @@ import android.os.Bundle
 import android.os.Process
 import android.text.Spannable
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.view.WindowManager
 import android.view.inputmethod.BaseInputConnection
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -23,26 +27,42 @@ import app.olauncher.R
 import app.olauncher.data.AppModel
 import app.olauncher.data.Constants
 import app.olauncher.data.Prefs
+import app.olauncher.data.folderKey
+import app.olauncher.data.groupIntoFolders
+import app.olauncher.databinding.DialogFolderNameBinding
 import app.olauncher.databinding.FragmentAppDrawerBinding
+import app.olauncher.helper.OlDialog
+import app.olauncher.helper.createDialog
 import app.olauncher.helper.deletePinnedShortcut
 import app.olauncher.helper.hideKeyboard
 import app.olauncher.helper.isEinkDisplay
+import app.olauncher.helper.isPrivateSpaceProfile
 import app.olauncher.helper.isSystemAnimationsDisabled
 import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.openAppInfo
 import app.olauncher.helper.openSearch
 import app.olauncher.helper.openUrl
 import app.olauncher.helper.showKeyboard
+import app.olauncher.helper.showPopupMenu
 import app.olauncher.helper.showToast
 import app.olauncher.helper.uninstall
+import java.text.Collator
 
 class AppDrawerFragment : BaseFragment() {
+
+    companion object {
+        private const val MENU_NEW_FOLDER = -1
+        private const val MENU_REMOVE_FROM_FOLDER = -2
+        private const val MENU_RENAME_FOLDER = 1
+        private const val MENU_DELETE_FOLDER = 2
+    }
 
     private lateinit var prefs: Prefs
     private lateinit var adapter: AppDrawerAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private var searchTextView: TextView? = null
     private var cachedIsCjkKeyboard: Boolean? = null
+    private var dialog: OlDialog? = null
 
     private var flag = Constants.FLAG_LAUNCH_APP
     private var canRename = false
@@ -167,7 +187,7 @@ class AppDrawerFragment : BaseFragment() {
             },
             appDeleteListener = { appModel ->
                 when (appModel) {
-                    is AppModel.PrivateSpaceHeader -> {}
+                    is AppModel.PrivateSpaceHeader, is AppModel.Folder -> {}
                     is AppModel.PinnedShortcut ->
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                             requireContext().deletePinnedShortcut(
@@ -227,6 +247,12 @@ class AppDrawerFragment : BaseFragment() {
                 prefs.setAppRenameLabel(identifier, renameLabel)
                 viewModel.getAppList()
             },
+            appFolderListener = { appModel, anchor -> showAppFolderMenu(appModel, anchor) },
+            folderToggleListener = { folder ->
+                viewModel.expandedFolders.apply { if (!remove(folder.id)) add(folder.id) }
+                updateCombinedAppList()
+            },
+            folderMenuListener = { folder, anchor -> showFolderMenu(folder, anchor) },
             privateSpaceToggleListener = {
                 viewModel.togglePrivateSpaceLock()
             },
@@ -294,17 +320,132 @@ class AppDrawerFragment : BaseFragment() {
 
     private fun updateCombinedAppList() {
         val apps = currentAppList ?: return
-        val combined = apps.toMutableList()
+        val combined = groupIntoFolders(apps, prefs.appFolders, viewModel.expandedFolders, prefs.folderPosition)
+        val searchable = apps.toMutableList()
 
         if (flag == Constants.FLAG_LAUNCH_APP && currentPrivateSpaceAvailable) {
             combined.add(AppModel.PrivateSpaceHeader(isLocked = currentPrivateSpaceLocked))
             if (!currentPrivateSpaceLocked) {
-                currentPrivateSpaceApps?.let { combined.addAll(it) }
+                currentPrivateSpaceApps?.let {
+                    combined.addAll(it)
+                    searchable.addAll(it)
+                }
             }
         }
 
-        adapter.setAppList(combined)
+        adapter.setAppList(combined, searchable)
         adapter.filter.filter(binding.search.query)
+    }
+
+    // Folders
+
+    private fun showAppFolderMenu(appModel: AppModel, anchor: View) {
+        if (isPrivateSpaceProfile(requireContext(), appModel.user)) {
+            requireContext().showToast(getString(R.string.folders_not_supported_private_space))
+            return
+        }
+        val key = appModel.folderKey
+        val folders = prefs.appFolders.sortedWith(compareBy(Collator.getInstance()) { it.name })
+        val current = folders.firstOrNull { key in it.members }
+        anchor.showPopupMenu(
+            configure = { menu ->
+                folders.forEachIndexed { index, folder ->
+                    if (folder != current) menu.add(Menu.NONE, index, index, folder.name)
+                }
+                menu.add(Menu.NONE, MENU_NEW_FOLDER, folders.size, R.string.new_folder_menu)
+                if (current != null)
+                    menu.add(Menu.NONE, MENU_REMOVE_FROM_FOLDER, folders.size + 1, R.string.remove_from_folder)
+            }
+        ) { item ->
+            when (item.itemId) {
+                MENU_NEW_FOLDER -> showFolderNameDialog(R.string.new_folder, "") { name ->
+                    viewModel.expandedFolders.add(prefs.createFolder(name, key))
+                    updateCombinedAppList()
+                }
+
+                MENU_REMOVE_FROM_FOLDER -> {
+                    prefs.moveToFolder(key, null)
+                    updateCombinedAppList()
+                }
+
+                else -> {
+                    val folder = folders[item.itemId]
+                    prefs.moveToFolder(key, folder.id)
+                    viewModel.expandedFolders.add(folder.id)
+                    updateCombinedAppList()
+                }
+            }
+        }
+    }
+
+    private fun showFolderMenu(folder: AppModel.Folder, anchor: View) {
+        anchor.showPopupMenu(
+            configure = { menu ->
+                menu.add(Menu.NONE, MENU_RENAME_FOLDER, 0, R.string.rename_folder)
+                menu.add(Menu.NONE, MENU_DELETE_FOLDER, 1, R.string.delete_folder)
+            }
+        ) { item ->
+            when (item.itemId) {
+                MENU_RENAME_FOLDER -> showFolderNameDialog(R.string.rename_folder, folder.name, folder.id) { name ->
+                    prefs.renameFolder(folder.id, name)
+                    updateCombinedAppList()
+                }
+
+                // Deleting a folder only ungroups its apps
+                MENU_DELETE_FOLDER -> {
+                    prefs.deleteFolder(folder.id)
+                    viewModel.expandedFolders.remove(folder.id)
+                    updateCombinedAppList()
+                }
+            }
+        }
+    }
+
+    private fun showFolderNameDialog(
+        @StringRes title: Int,
+        initialName: String,
+        folderId: String? = null,
+        onSave: (String) -> Unit,
+    ) {
+        var input: DialogFolderNameBinding? = null
+        val enteredName = { input?.etFolderName?.text?.toString()?.trim().orEmpty() }
+        // Hardware Enter fires the editor action on key down and again on key up
+        var saved = false
+        val save = {
+            saved = true
+            enteredName().takeIf { it.isNotEmpty() }?.let(onSave)
+        }
+        // Keep the dialog open on a duplicate so the typed name isn't lost
+        val validate = {
+            val existing = prefs.findFolderNamed(enteredName(), exceptId = folderId)
+            if (existing != null)
+                requireContext().showToast(getString(R.string.folder_name_taken, existing.name))
+            existing == null
+        }
+        val newDialog = requireContext().createDialog(
+            title,
+            R.string.okay,
+            onAction = { save() },
+            validate = { !saved && validate() },
+        ) { container ->
+            DialogFolderNameBinding.inflate(layoutInflater, container, false).also { input = it }.root
+        }
+        input?.etFolderName?.apply {
+            setText(initialName)
+            setSelection(text?.length ?: 0)
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId != EditorInfo.IME_ACTION_DONE) return@setOnEditorActionListener false
+                if (saved || !validate()) return@setOnEditorActionListener true
+                save()
+                newDialog.dismiss()
+                true
+            }
+            requestFocus()
+        }
+        newDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        dialog?.dismiss()
+        dialog = newDialog
+        newDialog.showRespectingStatusBar()
     }
 
     private fun initClickListeners() {
@@ -377,6 +518,8 @@ class AppDrawerFragment : BaseFragment() {
     }
 
     override fun onDestroyView() {
+        dialog?.dismiss()
+        dialog = null
         super.onDestroyView()
         searchTextView = null
         _binding = null

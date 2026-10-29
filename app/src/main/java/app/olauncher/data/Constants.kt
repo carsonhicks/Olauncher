@@ -28,6 +28,12 @@ object Constants {
         }
     }
 
+    object FolderPosition {
+        const val ALPHABETICAL = 0
+        const val TOP = 1
+        const val BOTTOM = 2
+    }
+
     object CharacterIndicator {
         const val SHOW = 102
         const val HIDE = 101

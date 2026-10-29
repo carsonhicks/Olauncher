@@ -82,6 +82,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         populateAlignment()
         populateStatusBar()
         populateDateTime()
+        populateFolderPosition()
         populateSwipeApps()
         initClickListeners()
         initObservers()
@@ -104,6 +105,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             R.id.alignment -> showAlignmentMenu(view)
             R.id.statusBar -> toggleStatusBar()
             R.id.dateTime -> showDateTimeMenu(view)
+            R.id.folderPosition -> showFolderPositionMenu(view)
             R.id.appThemeText -> showAppThemeMenu(view, showSystem = false)
             R.id.textSizeValue -> showTextSizeDialog()
             R.id.boldFont -> toggleBoldFont()
@@ -146,6 +148,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.alignment.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
         binding.dateTime.setOnClickListener(this)
+        binding.folderPosition.setOnClickListener(this)
         binding.swipeLeftApp.setOnClickListener(this)
         binding.swipeRightApp.setOnClickListener(this)
         binding.appThemeText.setOnClickListener(this)
@@ -193,6 +196,17 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
                 R.id.dateTimeOff -> toggleDateTime(Constants.DateTime.OFF)
                 R.id.dateOnly -> toggleDateTime(Constants.DateTime.DATE_ONLY)
             }
+        }
+    }
+
+    private fun showFolderPositionMenu(anchor: View) {
+        anchor.showPopupMenu(R.menu.folder_position) { item ->
+            prefs.folderPosition = when (item.itemId) {
+                R.id.folderPositionTop -> Constants.FolderPosition.TOP
+                R.id.folderPositionBottom -> Constants.FolderPosition.BOTTOM
+                else -> Constants.FolderPosition.ALPHABETICAL
+            }
+            populateFolderPosition()
         }
     }
 
@@ -314,6 +328,16 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
                 Constants.DateTime.DATE_ONLY -> R.string.date
                 Constants.DateTime.ON -> R.string.on
                 else -> R.string.off
+            }
+        )
+    }
+
+    private fun populateFolderPosition() {
+        binding.folderPosition.text = getString(
+            when (prefs.folderPosition) {
+                Constants.FolderPosition.TOP -> R.string.top
+                Constants.FolderPosition.BOTTOM -> R.string.bottom
+                else -> R.string.alphabetical
             }
         )
     }

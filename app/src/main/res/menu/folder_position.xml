@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/folderPositionAlphabetical"
+        android:title="@string/alphabetical" />
+    <item
+        android:id="@+id/folderPositionTop"
+        android:title="@string/top" />
+    <item
+        android:id="@+id/folderPositionBottom"
+        android:title="@string/bottom" />
+</menu>

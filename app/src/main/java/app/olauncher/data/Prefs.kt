@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import java.util.UUID
 
 class Prefs(context: Context) {
     private val PREFS_FILENAME = "app.olauncher"
@@ -28,6 +29,8 @@ class Prefs(context: Context) {
     private val SWIPE_RIGHT_ENABLED = "SWIPE_RIGHT_ENABLED"
     private val HIDDEN_APPS = "HIDDEN_APPS"
     private val HIDDEN_APPS_UPDATED = "HIDDEN_APPS_UPDATED"
+    private val APP_FOLDERS = "APP_FOLDERS"
+    private val FOLDER_POSITION = "FOLDER_POSITION"
     private val APP_THEME = "APP_THEME"
     private val TEXT_SIZE_SCALE = "TEXT_SIZE_SCALE"
     private val BOLD_FONT = "BOLD_FONT"
@@ -289,6 +292,45 @@ class Prefs(context: Context) {
     var hiddenApps: MutableSet<String>
         get() = prefs.getStringSet(HIDDEN_APPS, mutableSetOf()) as MutableSet<String>
         set(value) = prefs.edit { putStringSet(HIDDEN_APPS, value).apply() }
+
+    var appFolders: List<AppFolder>
+        get() = AppFolder.listFromJson(prefs.getString(APP_FOLDERS, "").orEmpty())
+        set(value) = prefs.edit { putString(APP_FOLDERS, AppFolder.listToJson(value)) }
+
+    var folderPosition: Int
+        get() = prefs.getInt(FOLDER_POSITION, Constants.FolderPosition.ALPHABETICAL)
+        set(value) = prefs.edit { putInt(FOLDER_POSITION, value) }
+
+    /** Creates a folder holding [memberKey] and returns its id. */
+    fun createFolder(name: String, memberKey: String): String {
+        val id = UUID.randomUUID().toString()
+        appFolders = withoutMember(memberKey) + AppFolder(id, name, listOf(memberKey))
+        return id
+    }
+
+    /** Moves [memberKey] into folder [folderId], or out of every folder when null. */
+    fun moveToFolder(memberKey: String, folderId: String?) {
+        appFolders = withoutMember(memberKey).map {
+            if (it.id == folderId) it.copy(members = it.members + memberKey) else it
+        }
+    }
+
+    /** Folder names are unique, ignoring case; [exceptId] lets a folder keep its own name. */
+    fun findFolderNamed(name: String, exceptId: String? = null): AppFolder? =
+        appFolders.firstOrNull { it.id != exceptId && it.name.equals(name.trim(), ignoreCase = true) }
+
+    fun renameFolder(folderId: String, name: String) {
+        appFolders = appFolders.map { if (it.id == folderId) it.copy(name = name) else it }
+    }
+
+    fun deleteFolder(folderId: String) {
+        appFolders = appFolders.filterNot { it.id == folderId }
+    }
+
+    // Folders left empty are dropped
+    private fun withoutMember(memberKey: String): List<AppFolder> = appFolders
+        .map { it.copy(members = it.members - memberKey) }
+        .filter { it.members.isNotEmpty() }
 
     var hiddenAppsUpdated: Boolean
         get() = prefs.getBoolean(HIDDEN_APPS_UPDATED, false)
