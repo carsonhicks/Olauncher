@@ -18,7 +18,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
 import android.net.Uri
-import android.os.Build
 import android.os.UserHandle
 import android.os.UserManager
 import android.provider.AlarmClock
@@ -32,10 +31,8 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.createBitmap
-import androidx.core.net.toUri
 import app.olauncher.BuildConfig
 import app.olauncher.R
 import app.olauncher.data.AppModel
@@ -115,7 +112,7 @@ suspend fun getAppsList(
             }
 
             // Add shortcuts if we're getting regular apps
-            if (includeRegularApps && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (includeRegularApps) {
                 val pinned = try {
                     getPinnedShortcuts(context, prefs, collator)
                 } catch (e: Exception) {
@@ -132,7 +129,6 @@ suspend fun getAppsList(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 private suspend fun getPinnedShortcuts(
     context: Context,
     prefs: Prefs,
@@ -201,7 +197,6 @@ fun isPackageInstalled(context: Context, packageName: String, userString: String
 }
 
 fun isPrivateSpaceProfile(context: Context, userHandle: UserHandle): Boolean {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return false
     return try {
         val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
         launcherApps.getLauncherUserInfo(userHandle)?.userType == "android.os.usertype.profile.PRIVATE"
@@ -220,7 +215,6 @@ fun isPrivateSpaceLocked(context: Context, userHandle: UserHandle): Boolean {
 }
 
 fun getPrivateSpaceUserHandle(context: Context): UserHandle? {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return null
     val userManager = context.getSystemService(Context.USER_SERVICE) as UserManager
     for (profile in userManager.userProfiles) {
         if (isPrivateSpaceProfile(context, profile)) return profile
@@ -305,11 +299,8 @@ fun setPlainWallpaper(context: Context, color: Int) {
         val bitmap = createBitmap(1000, 2000)
         bitmap.eraseColor(context.getColor(color))
         val manager = WallpaperManager.getInstance(context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            manager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM)
-            manager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK)
-        } else
-            manager.setBitmap(bitmap)
+        manager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_SYSTEM)
+        manager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK)
         bitmap.recycle()
     } catch (e: Exception) {
         e.printStackTrace()
@@ -602,7 +593,6 @@ fun Context.getColorFromAttr(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.N_MR1)
 fun Context.deletePinnedShortcut(packageName: String, shortcutIdToDelete: String, user: UserHandle) {
     val launcherApps = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 

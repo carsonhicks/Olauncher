@@ -6,7 +6,6 @@
     <string name="app_text_color">Χρώμα κειμένου</string>
     <string name="double_tap_to_lock_screen">Διπλό πάτημα για κλείδωμα</string>
     <string name="home_button_show_recents">Κουμπί αρχικής για πρόσφατες εφαρμογές</string>
-    <string name="admin_permission_message">Το Olauncher υπόσχεται να χρησιμοποιεί υπεύθυνα την άδεια προσβασιμότητας. Το Olauncher δεν συλλέγει ούτε μοιράζεται δεδομένα.</string>
     <string name="about">Σχετικά</string>
     <string name="off">Ανενεργό</string>
     <string name="on">Ενεργό</string>
@@ -83,10 +82,7 @@
     <string name="info">Πληροφορίες</string>
     <string name="delete">Απεγκατάσταση</string>
     <string name="text_size">Μέγεθος κειμένου</string>
-    <string name="enabled">Ενεργοποιημένο</string>
     <string name="disabled">Απενεργοποιημένο</string>
-    <string name="please_turn_on_double_tap_to_unlock">Ενεργοποιήστε το διπλό πάτημα για κλείδωμα</string>
-    <string name="launcher_failed_to_lock_device">Το Olauncher απέτυχε να κλειδώσει τη συσκευή.\nΕλέγξτε τις ρυθμίσεις της εφαρμογής σας.</string>
     <string name="long_press_to_select_app">Παρατεταμένο πάτημα για επιλογή εφαρμογής</string>
     <string name="unable_to_open_app">Αδύνατο το άνοιγμα εφαρμογής</string>
     <string name="unable_to_open_app_info">Αδύνατο το άνοιγμα πληροφοριών εφαρμογής</string>

@@ -34,10 +34,7 @@
     <string name="info">Bilgi</string>
     <string name="delete">Kaldır</string>
     <string name="text_size">Yazı Boyutu</string>
-    <string name="enabled">Etkin</string>
     <string name="disabled">Devre Dışı</string>
-    <string name="please_turn_on_double_tap_to_unlock">Lütfen kilitlemek için çift dokunmayı açın</string>
-    <string name="launcher_failed_to_lock_device">Olauncher cihazı kilitleyemedi. Lütfen uygulama ayarlarınızı kontrol edin.</string>
     <string name="long_press_to_select_app">Uygulamayı seçmek için uzun basın</string>
     <string name="unable_to_open_app">Uygulama açılamıyor</string>
     <string name="copied">Kopyalandı</string>
@@ -47,7 +44,6 @@
     <string name="adapter_hide">Gizle</string>
     <string name="app_text_color">Metin rengi</string>
     <string name="double_tap_to_lock_screen">Kilitlemek için çift dokunun</string>
-    <string name="admin_permission_message">Olauncher, erişilebilirlik iznini sorumlu bir şekilde kullanacağına söz verir. Olauncher herhangi bir veri toplamaz veya paylaşmaz.</string>
     <string name="about">Hakkında</string>
     <string name="off">Kapalı</string>
     <string name="on">Açık</string>

@@ -6,7 +6,6 @@
     <string name="app_text_color">टेक्स्ट का रंग</string>
     <string name="double_tap_to_lock_screen">लॉक करने के लिए डबल टैप करें</string>
     <string name="home_button_show_recents">हाल की ऐप्स के लिए होम बटन</string>
-    <string name="admin_permission_message">Olauncher एक्सेसिबिलिटी परमिशन का ज़िम्मेदारी से उपयोग करने का वादा करता है। Olauncher कोई डेटा एकत्र या साझा नहीं करता है।</string>
     <string name="about">जानकारी</string>
     <string name="off">बंद</string>
     <string name="on">चालू</string>
@@ -83,10 +82,7 @@
     <string name="info">जानकारी</string>
     <string name="delete">अनइंस्टॉल करें</string>
     <string name="text_size">टेक्स्ट का आकार</string>
-    <string name="enabled">चालू है</string>
     <string name="disabled">बंद है</string>
-    <string name="please_turn_on_double_tap_to_unlock">कृपया डबल टैप टू लॉक चालू करें</string>
-    <string name="launcher_failed_to_lock_device">Olauncher डिवाइस को लॉक करने में विफल रहा।\nकृपया अपनी ऐप सेटिंग्स जांचें।</string>
     <string name="long_press_to_select_app">ऐप चुनने के लिए लॉन्ग प्रेस करें</string>
     <string name="unable_to_open_app">ऐप खोलने में असमर्थ</string>
     <string name="unable_to_open_app_info">ऐप जानकारी खोलने में असमर्थ</string>

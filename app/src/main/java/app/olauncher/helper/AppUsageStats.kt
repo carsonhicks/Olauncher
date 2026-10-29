@@ -1,13 +1,10 @@
 package app.olauncher.helper
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 class AppUsageStats(
     val lastTimeUsedMillis: Long,
     val totalTimeInForegroundMillis: Long,
-    @get:RequiresApi(Build.VERSION_CODES.Q) val lastTimeForegroundServiceUsedMillis: Long,
-    @get:RequiresApi(Build.VERSION_CODES.Q) val totalTimeForegroundServiceUsedMillis: Long,
+    val lastTimeForegroundServiceUsedMillis: Long,
+    val totalTimeForegroundServiceUsedMillis: Long,
 )
 
 class AppUsageStatsBucket {

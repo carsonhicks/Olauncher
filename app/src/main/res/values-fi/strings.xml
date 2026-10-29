@@ -6,7 +6,6 @@
     <string name="app_text_color">Tekstin väri</string>
     <string name="double_tap_to_lock_screen">Lukitse kaksoisnapautuksella</string>
     <string name="home_button_show_recents">Koti-painike viimeisimmille sovelluksille</string>
-    <string name="admin_permission_message">Olauncher lupaa käyttää esteettömyysoikeutta vastuullisesti. Olauncher ei kerää tai jaa mitään tietoja.</string>
     <string name="about">Tietoja</string>
     <string name="off">Pois</string>
     <string name="on">Päällä</string>
@@ -82,10 +81,7 @@
     <string name="info">Tiedot</string>
     <string name="delete">Poista asennus</string>
     <string name="text_size">Tekstin koko</string>
-    <string name="enabled">Käytössä</string>
     <string name="disabled">Ei käytössä</string>
-    <string name="please_turn_on_double_tap_to_unlock">Ota käyttöön lukitus kaksoisnapautuksella</string>
-    <string name="launcher_failed_to_lock_device">Olauncher ei pystynyt lukitsemaan laitetta.\nTarkista sovelluksen asetukset.</string>
     <string name="long_press_to_select_app">Pitkä painallus valitaksesi sovelluksen</string>
     <string name="unable_to_open_app">Sovellusta ei voida avata</string>
     <string name="unable_to_open_app_info">Sovelluksen tietoja ei voida avata</string>

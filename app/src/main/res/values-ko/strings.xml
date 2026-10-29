@@ -6,7 +6,6 @@
     <string name="app_text_color">텍스트 색상</string>
     <string name="double_tap_to_lock_screen">화면을 두 번 탭하여 잠금</string>
     <string name="home_button_show_recents">홈 버튼으로 최근 앱 보기</string>
-    <string name="admin_permission_message">Olauncher는 접근성 권한을 책임감 있게 사용합니다. Olauncher는 어떤 데이터도 수집하거나 공유하지 않습니다.</string>
     <string name="about">앱 정보</string>
     <string name="off">끔</string>
     <string name="on">켬</string>
@@ -79,10 +78,7 @@
     <string name="info">정보</string>
     <string name="delete">제거</string>
     <string name="text_size">텍스트 크기</string>
-    <string name="enabled">활성</string>
     <string name="disabled">비활성</string>
-    <string name="please_turn_on_double_tap_to_unlock">두 번 탭하여 잠금 기능을 켜 주세요</string>
-    <string name="launcher_failed_to_lock_device">Olauncher가 기기를 잠그지 못했습니다.\n앱 설정을 확인해 주세요.</string>
     <string name="long_press_to_select_app">앱을 선택하려면 길게 누르세요</string>
     <string name="unable_to_open_app">앱을 열 수 없음</string>
     <string name="unable_to_open_app_info">앱 정보를 열 수 없음</string>

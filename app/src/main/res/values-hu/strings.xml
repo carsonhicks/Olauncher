@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Először állítsa be az Olauncher-t alapértelmezettként</string>
     <string name="app_text_color">Szövegszín</string>
     <string name="double_tap_to_lock_screen">Dupla koppintás a képernyő lezárásához</string>
-    <string name="admin_permission_message">Az Olauncher vállalja, hogy felelősségteljesen használja a kisegítő lehetőségek engedélyét. Az Olauncher nem gyűjt és nem oszt meg semmilyen adatot.</string>
     <string name="about">Névjegy</string>
     <string name="off">Ki</string>
     <string name="on">Be</string>
@@ -86,10 +85,7 @@
     <string name="info">Információ</string>
     <string name="delete">Eltávolítás</string>
     <string name="text_size">Szövegméret</string>
-    <string name="enabled">Engedélyezve</string>
     <string name="disabled">Letiltva</string>
-    <string name="please_turn_on_double_tap_to_unlock">Kérjük, kapcsolja be a dupla koppintást a lezáráshoz</string>
-    <string name="launcher_failed_to_lock_device">Az Olauncher nem tudta lezárni az eszközt.\nKérjük, ellenőrizze az alkalmazás beállításait.</string>
     <string name="long_press_to_select_app">Hosszan nyomva tartás az alkalmazás kiválasztásához</string>
     <string name="unable_to_open_app">Nem lehet megnyitni az alkalmazást</string>
     <string name="copied">Másolva</string>

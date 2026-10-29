@@ -6,7 +6,6 @@
     <string name="app_text_color">สีข้อความ</string>
     <string name="double_tap_to_lock_screen">แตะสองครั้งเพื่อล็อก</string>
     <string name="home_button_show_recents">ปุ่มโฮมสำหรับแอปล่าสุด</string>
-    <string name="admin_permission_message">Olauncher สัญญาว่าจะใช้สิทธิ์การเข้าถึงอย่างรับผิดชอบ Olauncher ไม่เก็บรวบรวมหรือแชร์ข้อมูลใดๆ</string>
     <string name="about">เกี่ยวกับ</string>
     <string name="off">ปิด</string>
     <string name="on">เปิด</string>
@@ -83,10 +82,7 @@
     <string name="info">ข้อมูล</string>
     <string name="delete">ถอนการติดตั้ง</string>
     <string name="text_size">ขนาดข้อความ</string>
-    <string name="enabled">เปิดใช้งานแล้ว</string>
     <string name="disabled">ปิดใช้งานแล้ว</string>
-    <string name="please_turn_on_double_tap_to_unlock">โปรดเปิดใช้งานแตะสองครั้งเพื่อล็อก</string>
-    <string name="launcher_failed_to_lock_device">Olauncher ล็อกอุปกรณ์ไม่สำเร็จ\nโปรดตรวจสอบการตั้งค่าแอปของคุณ</string>
     <string name="long_press_to_select_app">กดค้างเพื่อเลือกแอป</string>
     <string name="unable_to_open_app">ไม่สามารถเปิดแอปได้</string>
     <string name="unable_to_open_app_info">ไม่สามารถเปิดข้อมูลแอปได้</string>

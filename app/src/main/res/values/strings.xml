@@ -31,7 +31,6 @@
     <string name="app_text_color">Text color</string>
     <string name="double_tap_to_lock_screen">Double tap to lock</string>
     <string name="home_button_show_recents">Home button for recents</string>
-    <string name="admin_permission_message">CLauncher promises to use the accessibility permission responsibly. CLauncher does not collect or share any data.</string>
     <string name="about">About</string>
     <string name="off">Off</string>
     <string name="on">On</string>
@@ -109,10 +108,7 @@
     <string name="delete">Uninstall</string>
     <string name="text_size">Text size</string>
     <string name="bold_font">Bold font</string>
-    <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
-    <string name="please_turn_on_double_tap_to_unlock">Please turn on double tap to lock</string>
-    <string name="launcher_failed_to_lock_device">CLauncher failed to lock device.\nPlease check your app settings.</string>
     <string name="long_press_to_select_app">Long press to select app</string>
     <string name="unable_to_open_app">Unable to open app</string>
     <string name="unable_to_open_app_info">Unable to open app info</string>

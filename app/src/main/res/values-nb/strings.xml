@@ -6,7 +6,6 @@
     <string name="app_text_color">Tekstfarge</string>
     <string name="double_tap_to_lock_screen">Dobbelttrykk for å låse</string>
     <string name="home_button_show_recents">Hjem-knapp for nylige apper</string>
-    <string name="admin_permission_message">Olauncher lover å bruke tilgjengelighetstillatelsen ansvarlig. Olauncher samler ikke inn eller deler noen data.</string>
     <string name="about">Om</string>
     <string name="off">Av</string>
     <string name="on">På</string>
@@ -82,10 +81,7 @@
     <string name="info">Info</string>
     <string name="delete">Avinstaller</string>
     <string name="text_size">Tekststørrelse</string>
-    <string name="enabled">Aktivert</string>
     <string name="disabled">Deaktivert</string>
-    <string name="please_turn_on_double_tap_to_unlock">Slå på dobbelttrykk for å låse</string>
-    <string name="launcher_failed_to_lock_device">Olauncher klarte ikke å låse enheten.\nSjekk appinnstillingene dine.</string>
     <string name="long_press_to_select_app">Langt trykk for å velge app</string>
     <string name="unable_to_open_app">Kan ikke åpne app</string>
     <string name="unable_to_open_app_info">Kan ikke åpne appinformasjon</string>

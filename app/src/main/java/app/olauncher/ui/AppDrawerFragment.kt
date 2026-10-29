@@ -1,7 +1,6 @@
 package app.olauncher.ui
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.text.Spannable
@@ -189,13 +188,11 @@ class AppDrawerFragment : BaseFragment() {
                 when (appModel) {
                     is AppModel.PrivateSpaceHeader, is AppModel.Folder -> {}
                     is AppModel.PinnedShortcut ->
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                            requireContext().deletePinnedShortcut(
-                                packageName = appModel.appPackage,
-                                shortcutIdToDelete = appModel.shortcutId,
-                                user = appModel.user,
-                            )
-                        }
+                        requireContext().deletePinnedShortcut(
+                            packageName = appModel.appPackage,
+                            shortcutIdToDelete = appModel.shortcutId,
+                            user = appModel.user,
+                        )
 
                     is AppModel.App -> {
                         if (appModel.user != Process.myUserHandle()) {

@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Спочатку зробіть Olauncher лаунчером за замовчуванням</string>
     <string name="app_text_color">Колір тексту</string>
     <string name="double_tap_to_lock_screen">Блокування подвійним тапом</string>
-    <string name="admin_permission_message">Olauncher обіцяє відповідально використовувати дозвіл спеціальних можливостей. Olauncher не збирає і не передає жодних даних.</string>
     <string name="about">Про додаток</string>
     <string name="off">Вимк.</string>
     <string name="on">Увімк.</string>
@@ -84,10 +83,7 @@
     <string name="info">Інформація</string>
     <string name="delete">Видалити</string>
     <string name="text_size">Розмір тексту</string>
-    <string name="enabled">Увімкнено</string>
     <string name="disabled">Вимкнено</string>
-    <string name="please_turn_on_double_tap_to_unlock">Будь ласка, увімкніть подвійний дотик для блокування</string>
-    <string name="launcher_failed_to_lock_device">Olauncher не вдалося заблокувати пристрій.\nБудь ласка, перевірте налаштування вашої програми.</string>
     <string name="long_press_to_select_app">Тривале натискання для вибору програми</string>
     <string name="unable_to_open_app">Неможливо відкрити додаток</string>
     <string name="copied">Скопійовано</string>

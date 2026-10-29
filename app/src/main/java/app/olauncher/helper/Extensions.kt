@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.net.Uri
 import android.os.Build
 import android.os.UserHandle
 import android.provider.Settings
@@ -20,7 +19,6 @@ import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import androidx.annotation.RequiresApi
 import app.olauncher.BuildConfig
 import app.olauncher.R
 import app.olauncher.data.Constants
@@ -28,19 +26,11 @@ import java.util.Calendar
 import java.util.Locale
 
 fun Window.showStatusBar() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-        insetsController?.show(WindowInsets.Type.statusBars())
-    else
-        @Suppress("DEPRECATION", "InlinedApi")
-        decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+    insetsController?.show(WindowInsets.Type.statusBars())
 }
 
 fun Window.hideStatusBar() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-        insetsController?.hide(WindowInsets.Type.statusBars())
-    else
-        @Suppress("DEPRECATION")
-        decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_FULLSCREEN
+    insetsController?.hide(WindowInsets.Type.statusBars())
 }
 
 fun View.hideKeyboard() {
@@ -59,7 +49,6 @@ fun View.showKeyboard(show: Boolean = true) {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.Q)
 fun Activity.showLauncherSelector(requestCode: Int) {
     val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
     if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME)) {
@@ -176,7 +165,6 @@ fun Context.isCountryIn(): Boolean {
     return country.equals("IN", ignoreCase = true)
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 fun Context.appUsagePermissionGranted(): Boolean {
     val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
     return appOpsManager.unsafeCheckOpNoThrow(

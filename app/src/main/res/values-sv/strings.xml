@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Ange Olauncher som förvald först</string>
     <string name="app_text_color">Textfärg</string>
     <string name="double_tap_to_lock_screen">Dubbeltryck för att låsa</string>
-    <string name="admin_permission_message">Olauncher lovar att använda tillgänglighetsbehörigheten ansvarsfullt. Olauncher varken samlar in eller delar några data.</string>
     <string name="about">Om</string>
     <string name="off">Av</string>
     <string name="on">På</string>
@@ -84,10 +83,7 @@
     <string name="info">Info</string>
     <string name="delete">Avinstallera</string>
     <string name="text_size">Textstorlek</string>
-    <string name="enabled">Aktiverad</string>
     <string name="disabled">Inaktiverad</string>
-    <string name="please_turn_on_double_tap_to_unlock">Vänligen sätt på dubbeltryck för att låsa</string>
-    <string name="launcher_failed_to_lock_device">Olauncher lyckades inte låsa enheten.\nVänligen kontrollera dina appinställningar.</string>
     <string name="long_press_to_select_app">Långtryck för att välja app</string>
     <string name="unable_to_open_app">Kunde inte öppna appen</string>
     <string name="copied">Kopierad</string>

@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId "app.clauncher"
-        minSdkVersion 24
+        minSdkVersion 35
         targetSdkVersion 36
         versionCode 113
         versionName "v6.9.17"

@@ -34,10 +34,7 @@
     <string name="info">Info</string>
     <string name="delete">Deinstallieren</string>
     <string name="text_size">Textgröße</string>
-    <string name="enabled">Aktiviert</string>
     <string name="disabled">Deaktiviert</string>
-    <string name="please_turn_on_double_tap_to_unlock">Zum Sperren bitte Doppeltippen aktivieren</string>
-    <string name="launcher_failed_to_lock_device">Olauncher konnte das Gerät nicht sperren. Bitte überprüfen Sie Ihre App-Einstellungen.</string>
     <string name="long_press_to_select_app">Lange drücken, um die App auszuwählen</string>
     <string name="unable_to_open_app">App kann nicht geöffnet werden</string>
     <string name="copied">Kopiert</string>
@@ -47,7 +44,6 @@
     <string name="adapter_hide">Ausblenden</string>
     <string name="app_text_color">Textfarbe</string>
     <string name="double_tap_to_lock_screen">Zum Sperren zweimal tippen</string>
-    <string name="admin_permission_message">Olauncher verspricht, verantwortungsvoll mit der Berechtigung für Bedienungshilfen umzugehen. Olauncher sammelt keine Daten und gibt keine weiter.</string>
     <string name="about">Über</string>
     <string name="off">Aus</string>
     <string name="on">Ein</string>

@@ -35,10 +35,7 @@
     <string name="info">情報</string>
     <string name="delete">アンインストール</string>
     <string name="text_size">文字サイズ</string>
-    <string name="enabled">有効</string>
     <string name="disabled">無効</string>
-    <string name="please_turn_on_double_tap_to_unlock">ダブルタップでロックをオンにしてください</string>
-    <string name="launcher_failed_to_lock_device">Olauncher がデバイスをロックできませんでした。\nアプリの設定を確認してください。</string>
     <string name="long_press_to_select_app">長押ししてアプリを選択します</string>
     <string name="unable_to_open_app">アプリを開けません</string>
     <string name="copied">コピーされました</string>
@@ -48,7 +45,6 @@
     <string name="adapter_hide">非表示</string>
     <string name="app_text_color">テキストの色</string>
     <string name="double_tap_to_lock_screen">ダブルタップしてロックします</string>
-    <string name="admin_permission_message">Olauncher は、ユーザー補助の権限を責任を持って使用することを約束します。Olauncher はデータを収集したり共有したりしません。</string>
     <string name="about">アプリについて</string>
     <string name="off">オフ</string>
     <string name="on">オン</string>

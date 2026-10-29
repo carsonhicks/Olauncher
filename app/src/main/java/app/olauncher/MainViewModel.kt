@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
-import android.os.Build
 import android.os.UserHandle
 import android.os.UserManager
 import androidx.lifecycle.AndroidViewModel
@@ -628,7 +627,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun togglePrivateSpaceLock() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return
         val handle = getPrivateSpaceUserHandle(appContext) ?: return
         try {
             isPrivateSpaceToggling = true

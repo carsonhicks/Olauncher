@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Stel Olauncher eerst in als standaard</string>
     <string name="app_text_color">Tekstkleur</string>
     <string name="double_tap_to_lock_screen">Dubbel tik om te vergrendelen</string>
-    <string name="admin_permission_message">Olauncher belooft de toegankelijkheidstoestemming verantwoord te gebruiken. Olauncher verzamelt of deelt geen gegevens.</string>
     <string name="about">Over</string>
     <string name="off">Uit</string>
     <string name="on">Aan</string>
@@ -85,10 +84,7 @@
     <string name="info">Info</string>
     <string name="delete">Verwijderen</string>
     <string name="text_size">Tekstgrootte</string>
-    <string name="enabled">Ingeschakeld</string>
     <string name="disabled">Uitgeschakeld</string>
-    <string name="please_turn_on_double_tap_to_unlock">Schakel dubbel tik om te vergrendelen in</string>
-    <string name="launcher_failed_to_lock_device">Olauncher kon het apparaat niet vergrendelen.\nControleer je app-instellingen.</string>
     <string name="long_press_to_select_app">Lang indrukken om app te selecteren</string>
     <string name="unable_to_open_app">Kan app niet openen</string>
     <string name="copied">Gekopieerd</string>

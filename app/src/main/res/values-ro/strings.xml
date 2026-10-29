@@ -6,7 +6,6 @@
     <string name="app_text_color">Culoare text</string>
     <string name="double_tap_to_lock_screen">Atinge dublu pentru blocare</string>
     <string name="home_button_show_recents">Buton Acasă pentru aplicații recente</string>
-    <string name="admin_permission_message">Olauncher promite să folosească responsabil permisiunea de accesibilitate. Olauncher nu colectează și nu partajează date.</string>
     <string name="about">Despre</string>
     <string name="off">Dezactivat</string>
     <string name="on">Activat</string>
@@ -83,10 +82,7 @@
     <string name="info">Informații</string>
     <string name="delete">Dezinstalează</string>
     <string name="text_size">Dimensiune text</string>
-    <string name="enabled">Activat</string>
     <string name="disabled">Dezactivat</string>
-    <string name="please_turn_on_double_tap_to_unlock">Te rugăm să activezi atinge dublu pentru blocare</string>
-    <string name="launcher_failed_to_lock_device">Olauncher nu a reușit să blocheze dispozitivul.\nTe rugăm să verifici setările aplicației.</string>
     <string name="long_press_to_select_app">Apasă lung pentru a selecta aplicația</string>
     <string name="unable_to_open_app">Nu se poate deschide aplicația</string>
     <string name="unable_to_open_app_info">Nu se pot deschide informațiile aplicației</string>

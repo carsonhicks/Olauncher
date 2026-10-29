@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Establece Olauncher como predeterminado primero</string>
     <string name="app_text_color">Color del texto</string>
     <string name="double_tap_to_lock_screen">Tocar dos veces para bloquear</string>
-    <string name="admin_permission_message">Olauncher promete usar el permiso de accesibilidad de manera responsable. Olauncher no recopila ni comparte ningún dato.</string>
     <string name="about">Acerca de</string>
     <string name="off">No</string>
     <string name="on">Sí</string>
@@ -83,10 +82,7 @@
     <string name="info">Información</string>
     <string name="delete">Desinstalar</string>
     <string name="text_size">Tamaño del texto</string>
-    <string name="enabled">Activado</string>
     <string name="disabled">Desactivado</string>
-    <string name="please_turn_on_double_tap_to_unlock">Active el bloqueo con doble toque</string>
-    <string name="launcher_failed_to_lock_device">Olauncher no pudo bloquear el dispositivo.\nVerifique la configuración de la aplicación.</string>
     <string name="long_press_to_select_app">Mantenga pulsado para seleccionar una aplicación</string>
     <string name="unable_to_open_app">No se ha podido abrir la aplicación</string>
     <string name="copied">Copiado</string>

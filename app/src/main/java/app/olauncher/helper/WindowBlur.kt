@@ -1,12 +1,10 @@
 package app.olauncher.helper
 
 import android.animation.ValueAnimator
-import android.os.Build
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
-import androidx.annotation.RequiresApi
 import app.olauncher.R
 import java.util.function.Consumer
 import kotlin.math.abs
@@ -15,7 +13,7 @@ import kotlin.math.abs
 private const val DIM_WITH_BLUR = 0.3f
 
 /**
- * Cross-window blur behind a dialog [window] on Android 12+, ramped in and out
+ * Cross-window blur behind a dialog [window], ramped in and out
  * together with the dialog's own fade. The system can turn blur off at any time
  * (battery saver, the developer option, unsupported hardware); the dialog then
  * keeps the dim its theme asked for. Not used on e-ink displays, where the blur
@@ -23,7 +21,7 @@ private const val DIM_WITH_BLUR = 0.3f
  */
 class WindowBlur(private val window: Window) {
 
-    private val supported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !window.context.isEinkDisplay()
+    private val supported = !window.context.isEinkDisplay()
     private val duration = window.context.resources.getInteger(R.integer.dialog_anim_duration).toLong()
     private val radius = window.context.resources.getDimensionPixelSize(R.dimen.dialog_blur_behind_radius)
     private val dimWithoutBlur = window.attributes.dimAmount
@@ -53,7 +51,6 @@ class WindowBlur(private val window: Window) {
             .start()
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun start() {
         window.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
         val onAvailabilityChanged = Consumer<Boolean> { available ->
@@ -75,7 +72,6 @@ class WindowBlur(private val window: Window) {
         })
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun animateTo(target: Float) {
         animator?.cancel()
         animator = ValueAnimator.ofFloat(fraction, target).apply {
@@ -86,7 +82,6 @@ class WindowBlur(private val window: Window) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun apply(fraction: Float) {
         this.fraction = fraction
         window.attributes = window.attributes.apply { blurBehindRadius = (radius * fraction).toInt() }

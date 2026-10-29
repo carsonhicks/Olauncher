@@ -5,7 +5,6 @@
     <string name="set_as_default_launcher_first">הגדר תחילה את Olauncher כברירת מחדל</string>
     <string name="app_text_color">צבע הטקסט</string>
     <string name="double_tap_to_lock_screen">נעילת המסך בהקשה כפולה</string>
-    <string name="admin_permission_message">יישום Olauncher מתחייב להשתמש בהרשאת הנגישות באופן אחראי. יישום Olauncher אינו אוסף או משתף נתונים כלל.</string>
     <string name="about">מידע כללי</string>
     <string name="off">כבוי</string>
     <string name="on">מופעל</string>
@@ -77,10 +76,7 @@
     <string name="info">מידע</string>
     <string name="delete">הסרת התקנה</string>
     <string name="text_size">גודל הטקסט</string>
-    <string name="enabled">מופעל</string>
     <string name="disabled">מושבת</string>
-    <string name="please_turn_on_double_tap_to_unlock">נא להפעיל את מחוות ההקשה הכפולה לנעילה</string>
-    <string name="launcher_failed_to_lock_device">ל־Olauncher אין אפשרות לנעול את המסך.\nנא לבדוק את הגדרות היישום.</string>
     <string name="long_press_to_select_app">לבחירת יישום יש ללחוץ לחיצה ארוכה</string>
     <string name="unable_to_open_app">אין אפשרות לפתוח את היישום</string>
     <string name="copied">הועתק ללוח</string>

@@ -6,7 +6,6 @@
     <string name="app_text_color">Barva textu</string>
     <string name="double_tap_to_lock_screen">Dvojité klepnutí pro zamknutí</string>
     <string name="home_button_show_recents">Tlačítko domů pro nedávné aplikace</string>
-    <string name="admin_permission_message">Olauncher slibuje odpovědně používat oprávnění přístupnosti. Olauncher nesbírá ani nesdílí žádná data.</string>
     <string name="about">O aplikaci</string>
     <string name="off">Vypnuto</string>
     <string name="on">Zapnuto</string>
@@ -83,10 +82,7 @@
     <string name="info">Informace</string>
     <string name="delete">Odinstalovat</string>
     <string name="text_size">Velikost textu</string>
-    <string name="enabled">Povoleno</string>
     <string name="disabled">Zakázáno</string>
-    <string name="please_turn_on_double_tap_to_unlock">Zapněte prosím dvojité klepnutí pro zamknutí</string>
-    <string name="launcher_failed_to_lock_device">Olauncheru se nepodařilo zamknout zařízení.\nZkontrolujte prosím nastavení aplikace.</string>
     <string name="long_press_to_select_app">Dlouhým podržením vyberte aplikaci</string>
     <string name="unable_to_open_app">Nelze otevřít aplikaci</string>
     <string name="unable_to_open_app_info">Nelze otevřít informace o aplikaci</string>

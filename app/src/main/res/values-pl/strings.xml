@@ -34,10 +34,7 @@
     <string name="info">Informacje</string>
     <string name="delete">Odinstaluj</string>
     <string name="text_size">Rozmiar czcionki</string>
-    <string name="enabled">Włączono</string>
     <string name="disabled">Wyłączono</string>
-    <string name="please_turn_on_double_tap_to_unlock">Włącz podwójne dotknięcie, aby zablokować</string>
-    <string name="launcher_failed_to_lock_device">Olauncherowi nie udało się zablokować urządzenia. Sprawdź ustawienia aplikacji.</string>
     <string name="long_press_to_select_app">Naciśnij długo, aby wybrać aplikację</string>
     <string name="unable_to_open_app">Nie można otworzyć aplikacji</string>
     <string name="copied">Skopiowane</string>
@@ -47,7 +44,6 @@
     <string name="adapter_hide">Ukryj</string>
     <string name="app_text_color">Kolor tekstu</string>
     <string name="double_tap_to_lock_screen">Dotknij dwukrotnie, aby zablokować</string>
-    <string name="admin_permission_message">Olauncher obiecuje odpowiedzialnie korzystać z uprawnienia ułatwień dostępu. Olauncher nie gromadzi ani nie udostępnia żadnych danych.</string>
     <string name="about">Informacje</string>
     <string name="off">Wył.</string>
     <string name="on">Wł.</string>

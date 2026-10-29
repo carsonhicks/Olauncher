@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Définissez d\'abord Olauncher par défaut</string>
     <string name="app_text_color">Couleur du texte</string>
     <string name="double_tap_to_lock_screen">Double appui pour verrouiller</string>
-    <string name="admin_permission_message">Olauncher promet d\'utiliser l\'autorisation d\'accessibilité de manière responsable. Olauncher ne collecte ni ne partage aucune donnée.</string>
     <string name="about">À propos</string>
     <string name="off">Désactivé</string>
     <string name="on">Activé</string>
@@ -84,10 +83,7 @@
     <string name="info">Info</string>
     <string name="delete">Désinstaller</string>
     <string name="text_size">Taille du texte</string>
-    <string name="enabled">Activé</string>
     <string name="disabled">Désactivé</string>
-    <string name="please_turn_on_double_tap_to_unlock">Veuillez appuyer deux fois pour verrouiller.</string>
-    <string name="launcher_failed_to_lock_device">Olauncher n\'a pas réussi à verrouiller l\'appareil.\nVeuillez vérifier les paramètres de votre application.</string>
     <string name="long_press_to_select_app">Appuyez longuement pour sélectionner une application.</string>
     <string name="unable_to_open_app">Impossible d\'ouvrir l\'application</string>
     <string name="copied">Copié</string>

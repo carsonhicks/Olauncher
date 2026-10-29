@@ -6,7 +6,6 @@
     <string name="set_as_default_launcher_first">Prvo postavite Olauncher kao zadani</string>
     <string name="app_text_color">Boja teksta</string>
     <string name="double_tap_to_lock_screen">Dvostruki dodir za zaključavanje</string>
-    <string name="admin_permission_message">Olauncher obećava da će odgovorno koristiti dozvolu pristupačnosti. Olauncher ne prikuplja niti dijeli nikakve podatke.</string>
     <string name="about">Informacije</string>
     <string name="off">Isklj.</string>
     <string name="on">Uklj.</string>
@@ -86,10 +85,7 @@
     <string name="info">Informacije</string>
     <string name="delete">Deinstaliraj</string>
     <string name="text_size">Veličina teksta</string>
-    <string name="enabled">Omogućeno</string>
     <string name="disabled">Onemogućeno</string>
-    <string name="please_turn_on_double_tap_to_unlock">Molimo uključite dvostruki dodir za zaključavanje</string>
-    <string name="launcher_failed_to_lock_device">Olauncher nije uspio zaključati uređaj.\nMolimo provjerite postavke aplikacije.</string>
     <string name="long_press_to_select_app">Dugo pritisnite za odabir aplikacije</string>
     <string name="unable_to_open_app">Nije moguće otvoriti aplikaciju</string>
     <string name="copied">Kopirano</string>

@@ -36,10 +36,7 @@
     <string name="info">معلومات</string>
     <string name="delete">إلغاء التثبيت</string>
     <string name="text_size">حجم الخط</string>
-    <string name="enabled">ممكّن</string>
     <string name="disabled">مُطفأ</string>
-    <string name="please_turn_on_double_tap_to_unlock">يرجى تشغيل النقر المزدوج للقفل</string>
-    <string name="launcher_failed_to_lock_device">فشل Olauncher في قفل الجهاز.\nيرجى التحقق من إعدادات التطبيق.</string>
     <string name="long_press_to_select_app">اضغط مطوّلًا لاختيار التطبيق</string>
     <string name="unable_to_open_app">تعذر فتح التطبيق</string>
     <string name="copied">نُسخ</string>
@@ -49,7 +46,6 @@
     <string name="adapter_hide">إخفاء</string>
     <string name="app_text_color">لون الخط</string>
     <string name="double_tap_to_lock_screen">انقر مرتين لقفل الشاشة</string>
-    <string name="admin_permission_message">يعد Olauncher باستخدام إذن إمكانية الوصول بشكل مسؤول. لا يقوم Olauncher بجمع أو مشاركة أي بيانات.</string>
     <string name="about">حول</string>
     <string name="off">إيقاف</string>
     <string name="on">تشغيل</string>
