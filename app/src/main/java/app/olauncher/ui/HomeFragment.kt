@@ -1,14 +1,18 @@
 package app.olauncher.ui
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.admin.DevicePolicyManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.LauncherApps
 import android.content.res.Configuration
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +25,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
@@ -53,6 +58,7 @@ import app.olauncher.listener.ViewSwipeTouchListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListener {
 
@@ -64,6 +70,15 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     private val binding get() = _binding!!
 
     private var homeAppsLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+
+    // True while dateLine2 is showing the next alarm rather than the date, so taps go to the clock app
+    private var showingNextAlarm = false
+
+    private val nextAlarmReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (_binding != null) populateDateTime()
+        }
+    }
 
     private val requestLocationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -111,6 +126,21 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         )
     }
 
+    override fun onStart() {
+        super.onStart()
+        ContextCompat.registerReceiver(
+            requireContext(),
+            nextAlarmReceiver,
+            IntentFilter(AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStop() {
+        requireContext().unregisterReceiver(nextAlarmReceiver)
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
         populateHomeScreen(false)
@@ -148,7 +178,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             // Home button for recents feature disabled
             // R.id.recents -> {}
             R.id.clock -> openClockApp()
-            R.id.date, R.id.dateLine2 -> openCalendarApp()
+            R.id.date -> openCalendarApp()
+            R.id.dateLine2 -> if (showingNextAlarm) openClockApp() else openCalendarApp()
             R.id.weatherLayout -> openWeatherApp()
             R.id.setDefaultLauncher -> viewModel.resetLauncherLiveData.call()
             R.id.tvScreenTime -> openScreenTimeDigitalWellbeing()
@@ -211,6 +242,20 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         launchApp("Weather", app.packageName, app.activityClassName, "")
     }
 
+    private fun showClockAppPicker() {
+        showAppList(Constants.FLAG_SET_CLOCK_APP)
+        prefs.clockAppPackage = ""
+        prefs.clockAppClassName = ""
+        prefs.clockAppUser = ""
+    }
+
+    private fun showCalendarAppPicker() {
+        showAppList(Constants.FLAG_SET_CALENDAR_APP)
+        prefs.calendarAppPackage = ""
+        prefs.calendarAppClassName = ""
+        prefs.calendarAppUser = ""
+    }
+
     override fun onLongClick(view: View): Boolean {
         when (view.id) {
             R.id.homeApp1 -> showAppList(Constants.FLAG_SET_HOME_APP_1, prefs.appName1.isNotEmpty(), true)
@@ -223,25 +268,15 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             R.id.homeApp8 -> showAppList(Constants.FLAG_SET_HOME_APP_8, prefs.appName8.isNotEmpty(), true)
             R.id.homeApp9 -> showAppList(Constants.FLAG_SET_HOME_APP_9, prefs.appName9.isNotEmpty(), true)
             R.id.homeApp10 -> showAppList(Constants.FLAG_SET_HOME_APP_10, prefs.appName10.isNotEmpty(), true)
-            R.id.clock -> {
-                showAppList(Constants.FLAG_SET_CLOCK_APP)
-                prefs.clockAppPackage = ""
-                prefs.clockAppClassName = ""
-                prefs.clockAppUser = ""
-            }
+            R.id.clock -> showClockAppPicker()
+            R.id.date -> showCalendarAppPicker()
+            R.id.dateLine2 -> if (showingNextAlarm) showClockAppPicker() else showCalendarAppPicker()
 
             R.id.weatherLayout -> {
                 showAppList(Constants.FLAG_SET_WEATHER_APP)
                 prefs.weatherAppPackage = ""
                 prefs.weatherAppClassName = ""
                 prefs.weatherAppUser = ""
-            }
-
-            R.id.date, R.id.dateLine2 -> {
-                showAppList(Constants.FLAG_SET_CALENDAR_APP)
-                prefs.calendarAppPackage = ""
-                prefs.calendarAppClassName = ""
-                prefs.calendarAppUser = ""
             }
 
             R.id.tvScreenTime -> {
@@ -384,13 +419,23 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         val dateVisible = Constants.DateTime.isDateVisible(prefs.dateTimeVisibility)
         binding.date.isVisible = dateVisible
         binding.dateLine2.isVisible = dateVisible
+        showingNextAlarm = false
+        binding.dateLine2.setCompoundDrawablesRelative(null, null, null, null)
 
         if (prefs.showStatusBar) {
-            // Status bar is already showing battery, so use the second line for the weekday
-            // instead, split from the day/month so the clock column has the same line count
-            // as the weather block.
-            binding.date.text = SimpleDateFormat("EEEE", Locale.getDefault()).format(Date())
-            binding.dateLine2.text = SimpleDateFormat("MMMM d", Locale.getDefault()).format(Date())
+            // Status bar is already showing battery, so the second line goes to the next alarm
+            // when one is within a day, and otherwise to the date split from the weekday, so the
+            // clock column keeps the same line count as the weather block.
+            val nextAlarm = getNextAlarmWithinDay()
+            if (nextAlarm != null) {
+                showingNextAlarm = true
+                binding.date.text = SimpleDateFormat("EEE, MMM d", Locale.getDefault()).format(Date()).replace(".,", ",")
+                binding.dateLine2.text = DateFormat.getTimeFormat(requireContext()).format(Date(nextAlarm))
+                setAlarmIcon(binding.dateLine2)
+            } else {
+                binding.date.text = SimpleDateFormat("EEEE", Locale.getDefault()).format(Date())
+                binding.dateLine2.text = SimpleDateFormat("MMMM d", Locale.getDefault()).format(Date())
+            }
         } else {
             binding.date.text = SimpleDateFormat("EEE, MMMM d", Locale.getDefault()).format(Date()).replace(".,", ",")
             val battery = (requireContext().getSystemService(Context.BATTERY_SERVICE) as BatteryManager)
@@ -398,6 +443,22 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             binding.dateLine2.isVisible = dateVisible && battery > 0
             binding.dateLine2.text = getString(R.string.battery_percent, battery)
         }
+    }
+
+    private fun getNextAlarmWithinDay(): Long? {
+        val alarmManager = requireContext().getSystemService(AlarmManager::class.java)
+        val triggerTime = alarmManager.nextAlarmClock?.triggerTime ?: return null
+        return triggerTime.takeIf { it - System.currentTimeMillis() <= TimeUnit.DAYS.toMillis(1) }
+    }
+
+    // Sizes the icon to the text height and tints it with the text colors so it follows the theme
+    private fun setAlarmIcon(textView: TextView) {
+        val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_alarm)?.mutate() ?: return
+        val size = textView.textSize.toInt()
+        icon.setBounds(0, 0, size, size)
+        textView.setCompoundDrawablesRelative(icon, null, null, null)
+        textView.compoundDrawablePadding = 4.dpToPx()
+        textView.compoundDrawableTintList = textView.textColors
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
