@@ -38,6 +38,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { outputFileName = "CLauncher.apk" }
+    }
     buildFeatures {
         viewBinding = true
         buildConfig = true
